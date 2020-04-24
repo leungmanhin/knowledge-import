@@ -17,7 +17,7 @@ for line in chebi_fp:
     if len(chebi_name) > 0 and chebi_id != None:
       for name in chebi_name:
         chebi_dict[name.lower()] = chebi_id
-      print("ID: {}\nName: {}\n".format(chebi_id, chebi_name))
+      print("(chebi.obo) ID: {}\nName: {}\n".format(chebi_id, chebi_name))
     chebi_name = []
     chebi_id = None
   elif line.startswith("id: "):
@@ -45,10 +45,10 @@ for line in chebi_fp:
   name = contents[4].lower()
   if id_source == "ChEBI":
     if chebi_dict.get(name) != None and eid != chebi_dict[name]:
-      print("XXXXXXXXXXXXXXXXXX ChEBI IDs don't match: {} vs {}".format(eid, chebi_dict[name]))
+      print("XXXXXXXXXXXXXXXXXX ChEBI IDs don't match for {}\nnames.tsv {} vs {}\n".format(name, eid, chebi_dict[name]))
     else:
       chebi_dict[name] = eid
-      print("ID: {}\nName: {}\n".format(eid, name))
+      print("(names.tsv) ID: {}\nName: {}\n".format(eid, name))
 
 chebi_fp.close()
 
@@ -64,12 +64,12 @@ for line in chebi_fp:
   chebi_id = contents[2].replace("CHEBI:", "")
   name = contents[5].lower()
   if chebi_dict.get(name) != None and chebi_id != chebi_dict[name]:
-    print("XXXXXXXXXXXXXXXXXX ChEBI IDs don't match for {}\ncompunds.tsv {} vs {}".format(name, chebi_id, chebi_dict[name]))
+    print("XXXXXXXXXXXXXXXXXX ChEBI IDs don't match for {}\ncompunds.tsv {} vs {}\n".format(name, chebi_id, chebi_dict[name]))
   elif name == "null":
     continue
   else:
     chebi_dict[name] = chebi_id
-    print("ID: {}\nName: {}\n".format(chebi_id, name))
+    print("(compounds.tsv) ID: {}\nName: {}\n".format(chebi_id, name))
 
 chebi_fp.close()
 
