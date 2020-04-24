@@ -1,5 +1,6 @@
 # PYTHONIOENCODING=utf-8 python3 chebi_check.py
 
+import csv
 import re
 
 chebi_dict = {}
@@ -98,6 +99,40 @@ for line in chebi_fp:
 chebi_fp.close()
 
 # ----------
+chebi_path = "raw_data/structure links.csv"
+chebi_fp = open(chebi_path, "r", encoding="utf-8", errors="ignore")
+csv = csv.reader(chebi_fp)
+chebi_sl_dict = {}
+
+for line in csv:
+  # print("Reading line -- " + line)
+  if line[0] == "DrugBank":
+    continue
+  chebi_id = line[12].strip()
+  name = line[1].lower().strip()
+  if name != "" and chebi_id != "":
+    if chebi_dict.get(name) != None and chebi_id != chebi_dict[name]:
+      print("XXXXXXXXXXXXXXXXXX ChEBI IDs don't match for: " + name)
+      not_match.write("\nChEBI IDs don't match for: {}\n".format(name))
+      if chebi_dict.get(name) != None:
+        print("In chebi.obo: " + chebi_dict[name])
+        not_match.write("In chebi.obo: {}\n".format(chebi_dict[name]))
+      if chebi_names_dict.get(name) != None:
+        print("In names.tsv: " + chebi_names_dict[name])
+        not_match.write("In names.tsv: {}\n".format(chebi_names_dict[name]))
+      if chebi_compounds_dict.get(name) != None:
+        print("In compounds.tsv: " + chebi_compounds_dict[name])
+        not_match.write("In compounds.tsv: {}\n".format(chebi_compounds_dict[name]))
+      print("In structure links.csv: {}\n".format(chebi_id))
+      not_match.write("In structure links.csv: {}\n".format(chebi_id))
+    else:
+      chebi_dict[name] = chebi_id
+      chebi_sl_dict[name] = chebi_id
+      print("(structure links.csv) ID: {}\nName: {}\n".format(chebi_id, name))
+
+chebi_fp.close()
+
+# ----------
 tcmid_path = "raw_data/ingredient_targets_disease_drug-TCMID.v2.03.txt"
 tcmid_fp = open(tcmid_path, "r", encoding="utf-8", errors="ignore")
 
@@ -135,3 +170,6 @@ not_found.close()
 
 # +names.tsv +compounds.tsv, all lower:
 # Total no. of herbs in TCMID = 2693, of which found in ChEBI = 562
+
+# +names.tsv +compounds.tsv +structure links.csv, all lower:
+# Total no. of herbs in TCMID = 2693, of which found in ChEBI = 581
