@@ -3,6 +3,8 @@
 import re
 
 chebi_dict = {}
+not_match = open("id_not_match.txt", "w", encoding="utf-8", errors="ignore")
+not_found = open("not_found.txt", "w", encoding="utf-8", errors="ignore")
 
 # From: ftp://ftp.ebi.ac.uk/pub/databases/chebi/ontology/chebi.obo
 chebi_path = "raw_data/chebi.obo"
@@ -50,9 +52,12 @@ for line in chebi_fp:
   if id_source == "ChEBI":
     if chebi_dict.get(name) != None and eid != chebi_dict[name]:
       print("XXXXXXXXXXXXXXXXXX ChEBI IDs don't match for: " + name)
+      not_match.write("\nChEBI IDs don't match for: {}\n".format(name))
       if chebi_dict.get(name) != None:
         print("In chebi.obo: " + chebi_dict[name])
+        not_match.write("In chebi.obo: {}\n".format(chebi_dict[name]))
       print("In names.tsv: {}\n".format(eid))
+      not_match.write("In names.tsv: {}\n".format(eid))
     else:
       chebi_dict[name] = eid
       chebi_names_dict[name] = eid
@@ -74,11 +79,15 @@ for line in chebi_fp:
   name = contents[5].lower().strip()
   if chebi_dict.get(name) != None and chebi_id != chebi_dict[name]:
     print("XXXXXXXXXXXXXXXXXX ChEBI IDs don't match for: " + name)
+    not_match.write("\nChEBI IDs don't match for: {}\n".format(name))
     if chebi_dict.get(name) != None:
       print("In chebi.obo: " + chebi_dict[name])
+      not_match.write("In chebi.obo: {}\n".format(chebi_dict[name]))
     if chebi_names_dict.get(name) != None:
       print("In names.tsv: " + chebi_names_dict[name])
-    print("In compunds.tsv: {}\n".format(chebi_id))
+      not_match.write("In names.tsv: {}\n".format(chebi_names_dict[name]))
+    print("In compounds.tsv: {}\n".format(chebi_id))
+    not_match.write("In compounds.tsv: {}\n".format(chebi_id))
   elif name == "null":
     continue
   else:
@@ -103,10 +112,14 @@ for line in tcmid_fp:
       tcmid_match_cnt = tcmid_match_cnt + 1
     else:
       print("!!! NOT found: {}".format(tcmid_herb))
+      not_found.write(tcmid_herb + "\n")
 
 tcmid_fp.close()
 
 print("Total no. of herbs in TCMID = {}, of which found in ChEBI = {}".format(len(tcmid_herbs), tcmid_match_cnt))
+
+not_match.close()
+not_found.close()
 
 # Default:
 # Total no. of herbs in TCMID = 2711, of which found in ChEBI = 374
