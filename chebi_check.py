@@ -21,11 +21,11 @@ for line in chebi_fp:
     chebi_name = []
     chebi_id = None
   elif line.startswith("id: "):
-    chebi_id = line.replace("id: CHEBI:", "")
+    chebi_id = line.replace("id: CHEBI:", "").strip()
   elif line.startswith("name: "):
     chebi_name.append(line.replace("name: ", ""))
   elif line.startswith("synonym: ") and "EXACT" in line:
-    name = re.match(".+\"(.+)\".+", line).group(1)
+    name = re.match(".+\"(.+)\".+", line).group(1).strip()
     if name not in chebi_name:
       chebi_name.append(name)
 
@@ -40,9 +40,9 @@ for line in chebi_fp:
   if line.startswith("ID"):
     continue
   contents = line.replace("\n", "").split("\t")
-  eid = contents[1]
-  id_source = contents[3]
-  name = contents[4].lower()
+  eid = contents[1].strip()
+  id_source = contents[3].strip()
+  name = contents[4].lower().strip()
   if id_source == "ChEBI":
     if chebi_dict.get(name) != None and eid != chebi_dict[name]:
       print("XXXXXXXXXXXXXXXXXX ChEBI IDs don't match for {}\nnames.tsv {} vs {}\n".format(name, eid, chebi_dict[name]))
@@ -61,8 +61,8 @@ for line in chebi_fp:
   if line.startswith("ID"):
     continue
   contents = line.replace("\n", "").split("\t")
-  chebi_id = contents[2].replace("CHEBI:", "")
-  name = contents[5].lower()
+  chebi_id = contents[2].replace("CHEBI:", "").strip()
+  name = contents[5].lower().strip()
   if chebi_dict.get(name) != None and chebi_id != chebi_dict[name]:
     print("XXXXXXXXXXXXXXXXXX ChEBI IDs don't match for {}\ncompunds.tsv {} vs {}\n".format(name, chebi_id, chebi_dict[name]))
   elif name == "null":
